@@ -1,0 +1,107 @@
+﻿<Window x:Class="WpfApp_feleves.Views.EditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp_feleves.Views"
+        xmlns:models="clr-namespace:WpfApp_feleves.Models"
+        mc:Ignorable="d"
+        Title="Játék szerkesztése" Height="450" Width="400"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+
+    <Window.Resources>
+        <ObjectDataProvider x:Key="GameStatusEnum"
+                            MethodName="GetValues" 
+                            ObjectType="{x:Type models:GameStatus}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:GameStatus" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Window.Resources>
+
+    <TabControl Margin="15">
+
+        <TabItem Header="Alap adatok" FontWeight="Bold">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Content="Név:" VerticalAlignment="Center" />
+                <TextBox Grid.Row="0" Grid.Column="1" Margin="5" Text="{Binding SzerkesztettJatek.Nev, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Label Grid.Row="1" Grid.Column="0" Content="Típus:" VerticalAlignment="Center" />
+                <ComboBox Grid.Row="1" Grid.Column="1" Margin="5" 
+                          ItemsSource="{Binding ElérhetőTípusok}"
+                          Text="{Binding SzerkesztettJatek.Tipus}"
+                          IsEditable="True" />
+
+                <Label Grid.Row="2" Grid.Column="0" Content="Játékosszám:" VerticalAlignment="Center" />
+                <ComboBox Grid.Row="2" Grid.Column="1" Margin="5" 
+                          ItemsSource="{Binding ElérhetőJátékosszámok}"
+                          Text="{Binding SzerkesztettJatek.JatekosSzam}"
+                          IsEditable="True" />
+
+                <Label Grid.Row="3" Grid.Column="0" Content="Státusz:" VerticalAlignment="Center" />
+                <ComboBox Grid.Row="3" Grid.Column="1" Margin="5" 
+                          ItemsSource="{Binding Source={StaticResource GameStatusEnum}}"
+                          SelectedItem="{Binding SzerkesztettJatek.Status}" />
+
+                <Label Grid.Row="4" Grid.Column="0" Content="Kölcsönvevő:" VerticalAlignment="Center" x:Name="lblKolcsonvevo">
+                    <Label.Style>
+                        <Style TargetType="Label">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SzerkesztettJatek.Status}" Value="Raktáron">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
+
+                <TextBox Grid.Row="4" Grid.Column="1" Margin="5" Text="{Binding SzerkesztettJatek.Kolcsonvevo}" x:Name="txtKolcsonvevo">
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SzerkesztettJatek.Status}" Value="Raktáron">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+
+                <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Mentés" IsDefault="True" Click="Mentes_Click" MinWidth="80" Margin="5" />
+                    <Button Content="Mégse" IsCancel="True" Click="Megse_Click" MinWidth="80" Margin="5" />
+                </StackPanel>
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Előzmények 📜" FontWeight="Bold">
+            <DockPanel Margin="5">
+                <TextBlock DockPanel.Dock="Top" Text="Korábbi kölcsönzési események:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+
+                <ListBox ItemsSource="{Binding SzerkesztettJatek.KolcsonzésiElőzmények}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="2"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </TabItem>
+    </TabControl>
+</Window>
